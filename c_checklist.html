@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C Learning Checklist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0d0d0d;
+    --panel: #141414;
+    --border: #2a2a2a;
+    --green: #00ff88;
+    --green-dim: #00ff8833;
+    --amber: #ffaa00;
+    --amber-dim: #ffaa0022;
+    --text: #e0e0e0;
+    --muted: #555;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2.2rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px #00ff8866;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .progress-bar-wrap {
+    max-width: 640px;
+    margin: 1.2rem auto 0;
+    background: var(--border);
+    border-radius: 99px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--amber));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .progress-label span {
+    color: var(--green);
+  }
+
+  .section {
+    max-width: 640px;
+    margin: 1.5rem auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.1rem;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-header:hover { background: #1a1a1a; }
+
+  .section-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--amber);
+    background: var(--amber-dim);
+    border: 1px solid var(--amber);
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex: 1;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .section-arrow {
+    font-size: 0.7rem;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+
+  .section.collapsed .section-arrow { transform: rotate(-90deg); }
+  .section.collapsed .items { display: none; }
+
+  .items { background: #111; }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.65rem 1.1rem;
+    border-bottom: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #161616; }
+
+  .item.done .item-text {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--muted);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 0.7rem;
+  }
+
+  .item.done .checkbox {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .item-text {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  .item-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .current-tag {
+    font-size: 0.65rem;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    vertical-align: middle;
+  }
+
+  .reset-btn {
+    display: block;
+    margin: 1.5rem auto 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover { border-color: #ff4444; color: #ff4444; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>C LEARNING ROADMAP</h1>
+  <p>// check off topics as you complete them</p>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label">
+    <span id="doneCount">0</span> / <span id="totalCount">0</span> topics completed
+  </div>
+</header>
+
+<div id="checklist"></div>
+<button class="reset-btn" onclick="resetAll()">⟳ reset all</button>
+
+<script>
+const data = [
+  {
+    title: "Basics & Setup",
+    items: [
+      { text: "What is C? History & uses", note: "why C still matters" },
+      { text: "Setting up a compiler (GCC / Code::Blocks / VS Code)" },
+      { text: "Your first program — Hello World" },
+      { text: "Structure of a C program", note: "#include, main(), return 0" },
+    ]
+  },
+  {
+    title: "Variables & Data Types",
+    items: [
+      { text: "int, float, double, char", note: "you're here ✦", current: true },
+      { text: "Format specifiers — %d, %f, %c, %s" , note: "you've done this ✦", current: true},
+      { text: "scanf() and printf()", note: "you've done this ✦", current: true },
+      { text: "Variable declaration & initialization" },
+      { text: "Constants — const and #define" },
+      { text: "Type conversion (casting)" },
+    ]
+  },
+  {
+    title: "Operators",
+    items: [
+      { text: "Arithmetic operators — +, -, *, /, %" },
+      { text: "Relational operators — ==, !=, <, >" },
+      { text: "Logical operators — &&, ||, !" },
+      { text: "Assignment operators — =, +=, -=" },
+      { text: "Increment & Decrement — ++, --" },
+    ]
+  },
+  {
+    title: "Conditional Statements",
+    items: [
+      { text: "if statement" },
+      { text: "if / else" },
+      { text: "else if ladder" },
+      { text: "switch / case" },
+      { text: "Ternary operator — condition ? a : b" },
+    ]
+  },
+  {
+    title: "Loops",
+    items: [
+      { text: "while loop" },
+      { text: "do...while loop" },
+      { text: "for loop" },
+      { text: "break and continue" },
+      { text: "Nested loops" },
+    ]
+  },
+  {
+    title: "Functions",
+    items: [
+      { text: "Defining and calling functions" },
+      { text: "Function parameters & return values" },
+      { text: "Recursion" },
+      { text: "Scope of variables — local vs global" },
+      { text: "Storage classes — auto, static, extern" },
+    ]
+  },
+  {
+    title: "Arrays",
+    items: [
+      { text: "1D arrays — declaration & access" },
+      { text: "2D arrays & matrices" },
+      { text: "Passing arrays to functions" },
+      { text: "Strings as character arrays" },
+      { text: "String functions — strlen, strcpy, strcmp" },
+    ]
+  },
+  {
+    title: "Pointers",
+    items: [
+      { text: "What is a pointer? & and * operators" },
+      { text: "Pointer arithmetic" },
+      { text: "Pointers and arrays" },
+      { text: "Pointers and functions (pass by reference)" },
+      { text: "Pointer to pointer" },
+    ]
+  },
+  {
+    title: "Structures & Unions",
+    items: [
+      { text: "Defining and using structs" },
+      { text: "Array of structures" },
+      { text: "Nested structures" },
+      { text: "Unions" },
+      { text: "typedef" },
+    ]
+  },
+  {
+    title: "File Handling",
+    items: [
+      { text: "Opening and closing files — fopen, fclose" },
+      { text: "Reading and writing — fprintf, fscanf" },
+      { text: "fgets and fputs" },
+      { text: "Binary file operations" },
+    ]
+  },
+  {
+    title: "Dynamic Memory",
+    items: [
+      { text: "malloc() and free()" },
+      { text: "calloc() and realloc()" },
+      { text: "Memory leaks & best practices" },
+    ]
+  },
+];
+
+let checked = JSON.parse(localStorage.getItem('c-checklist') || '{}');
+
+function save() {
+  localStorage.setItem('c-checklist', JSON.stringify(checked));
+}
+
+function render() {
+  const container = document.getElementById('checklist');
+  container.innerHTML = '';
+  let total = 0, done = 0;
+
+  data.forEach((section, si) => {
+    const collapsed = false;
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.dataset.si = si;
+
+    const sectionDone = section.items.filter((_, ii) => checked[`${si}-${ii}`]).length;
+    total += section.items.length;
+    done += sectionDone;
+
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${si})">
+        <span class="section-num">${String(si+1).padStart(2,'0')}</span>
+        <span class="section-title">${section.title}</span>
+        <span class="section-count">${sectionDone}/${section.items.length}</span>
+        <span class="section-arrow">▼</span>
+      </div>
+      <div class="items">
+        ${section.items.map((item, ii) => `
+          <div class="item ${checked[`${si}-${ii}`] ? 'done' : ''}" onclick="toggle(${si},${ii})">
+            <div class="checkbox">${checked[`${si}-${ii}`] ? '✓' : ''}</div>
+            <div>
+              <div class="item-text">${item.text}${item.current ? `<span class="current-tag">you're here</span>` : ''}</div>
+              ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('progressFill').style.width = `${Math.round(done/total*100)}%`;
+}
+
+function toggle(si, ii) {
+  const key = `${si}-${ii}`;
+  checked[key] = !checked[key];
+  save();
+  render();
+}
+
+function toggleSection(si) {
+  const el = document.querySelector(`.section[data-si="${si}"]`);
+  el.classList.toggle('collapsed');
+}
+
+function resetAll() {
+  if (confirm('Reset all progress?')) {
+    checked = {};
+    save();
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
