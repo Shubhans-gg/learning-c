@@ -2,5 +2,9 @@
 // alphabet using a pointer.
 #include <stdio.h>
 int main(){
-    
+    char a ='A';
+    char z='Z';
+    for (char i=a; i<=z; i++){
+        printf("%c\t", i);
+    }
 }
