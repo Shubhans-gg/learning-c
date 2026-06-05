@@ -15,4 +15,5 @@ int main(){
     fprintf(fptr,"%s\t", name);
     fprintf(fptr,"%d\t", age);
     fprintf(fptr,"%f\t", gpa);
+    fclose(fptr);
 }
